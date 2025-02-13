@@ -78,60 +78,66 @@ async function deleteExpense(id) {
     }
 }
 
-// Update Pie Chart
-// let expenseChart;
-// function updateChart(expenseData) {
-//     const ctx = document.getElementById("expenseChart").getContext("2d");
 
-//     if (expenseChart) {
-//         expenseChart.destroy();
-//     }
 
-//     expenseChart = new Chart(ctx, {
-//         type: "pie",
-//         data: {
-//             labels: Object.keys(expenseData),
-//             datasets: [{
-//                 data: Object.values(expenseData),
-//                 backgroundColor: ['#ff6384', '#36a2eb', '#ffce56', '#4bc0c0', '#9966ff']
-//             }]
-//         }
-//     });
-// }
 
+let expenseChart = null;
 
 function updateChart(expenseData) {
     const ctx = document.getElementById("expenseChart").getContext("2d");
 
-    if (expenseChart) {
+    if (expenseChart instanceof Chart) {
         expenseChart.destroy();
     }
+
+    const totalAmount = Object.values(expenseData).reduce((sum, val) => sum + val, 0);
 
     expenseChart = new Chart(ctx, {
         type: "pie",
         data: {
-            labels: Object.keys(expenseData),
+            labels: Object.keys(expenseData).map(category => {
+                const value = expenseData[category];
+                const percentage = ((value / totalAmount) * 100).toFixed(2);
+                return `${category} (${percentage}%)`;
+            }),
             datasets: [{
                 data: Object.values(expenseData),
                 backgroundColor: ['#ff6384', '#36a2eb', '#ffce56', '#4bc0c0', '#9966ff']
             }]
         },
         options: {
+            responsive: true,
             plugins: {
+                legend: {
+                    position: 'top'
+                },
                 tooltip: {
                     callbacks: {
                         label: function(tooltipItem) {
-                            const total = tooltipItem.dataset.data.reduce((sum, val) => sum + val, 0);
                             const value = tooltipItem.raw;
-                            const percentage = ((value / total) * 100).toFixed(2);
-                            return `${tooltipItem.label}: ${value} (${percentage}%)`;
+                            const percentage = ((value / totalAmount) * 100).toFixed(2);
+                            return `${tooltipItem.label}: $${value} (${percentage}%)`;
                         }
+                    }
+                },
+                datalabels: {  // ✅ Show percentage inside pie chart
+                    formatter: (value, context) => {
+                        const percentage = ((value / totalAmount) * 100).toFixed(2);
+                        return `${percentage}%`;
+                    },
+                    color: '#fff',
+                    font: {
+                        weight: 'bold',
+                        size: 14
                     }
                 }
             }
-        }
+        },
+        plugins: [ChartDataLabels] // ✅ Register Datalabels plugin
     });
 }
+
+
 
 // Fetch expenses when the page loads
 document.addEventListener("DOMContentLoaded", fetchExpenses);
