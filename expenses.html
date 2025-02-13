@@ -4,21 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Expense Tracker</title>
-    
-    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
-    <!-- SweetAlert for alerts -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 </head>
 <body>
     <div class="container mt-4">
         <h2 class="text-center">Expense Tracker</h2>
 
-        <!-- Expense Input Fields -->
+        
         <div class="mb-3">
             <input type="text" id="category" class="form-control mb-2" placeholder="Category (e.g., Food)">
             <input type="number" id="amount" class="form-control mb-2" placeholder="Amount">
@@ -26,17 +19,19 @@
             <button onclick="addExpense()" class="btn btn-primary w-100">Add Expense</button>
         </div>
 
-        <!-- Expense List -->
+        
         <h4>Expense List</h4>
         <ul id="expenseList" class="list-group mb-3"></ul>
 
-        <!-- Expense Summary -->
+        
         <h4>Expense Summary</h4>
         <canvas id="expenseChart" width="50" height="50"></canvas>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
 
-    <!-- External JavaScript File -->
+    
     <script src="expenses.js" type="module"></script>
 </body>
 </html>

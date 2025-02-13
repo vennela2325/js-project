@@ -13,11 +13,11 @@ const firebaseConfig = {
     measurementId: "G-EK9P2K6BQM"
 };
 
-// Initialize Firebase
+
 const app = initializeApp(firebaseConfig); 
 const auth = getAuth(app);
 
-// Signup functionality
+
 document.getElementById("signUpBtn").addEventListener("click", (e) => {
     e.preventDefault();
     let signUpModal = new bootstrap.Modal(document.getElementById("signUpModal"));
@@ -58,7 +58,7 @@ document.getElementById("signUpSubmitBtn").addEventListener("click", async () =>
     }
 });
 
-// Login functionality
+
 document.getElementById("loginBtn").addEventListener("click", (e) => {
     e.preventDefault();
     let loginModal = new bootstrap.Modal(document.getElementById("loginModal"));
@@ -77,10 +77,10 @@ document.getElementById("loginSubmitBtn").addEventListener("click", async () => 
     try {
         await signInWithEmailAndPassword(auth, email, password);
         Swal.fire("Success", "Logged in successfully", "success").then(() => {
-            // Clear the input fields after login
+            
             document.getElementById("login-email").value = "";
             document.getElementById("login-password").value = "";
-            // Redirect to expenses page
+            
             location.href = "expenses.html";
         });
     } catch (error) {

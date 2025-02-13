@@ -1,7 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
 import { getDatabase, ref, set, get, remove } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-database.js";
 
-// Firebase Configuration
+
 const firebaseConfig = {
     apiKey: "AIzaSyAgLFKLAJuAxhxEqLXl7GqFhhtyp-QWRtQ",
     authDomain: "expenditure-tracker-js.firebaseapp.com",
@@ -13,11 +13,11 @@ const firebaseConfig = {
     measurementId: "G-EK9P2K6BQM"
 };
 
-// Initialize Firebase
+
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-// Add Expense Function
+
 async function addExpense() {
     const category = document.getElementById("category").value.trim();
     const amount = parseFloat(document.getElementById("amount").value);
@@ -43,7 +43,7 @@ async function addExpense() {
     }
 }
 
-// Fetch Expenses from Firebase
+
 async function fetchExpenses() {
     const dbRef = ref(db, "expenses");
     const snapshot = await get(dbRef);
@@ -67,7 +67,7 @@ async function fetchExpenses() {
     updateChart(expenseData);
 }
 
-// Delete Expense from Firebase
+
 async function deleteExpense(id) {
     try {
         await remove(ref(db, "expenses/" + id));
@@ -77,10 +77,6 @@ async function deleteExpense(id) {
         Swal.fire("Error", error.message, "error");
     }
 }
-
-
-
-
 let expenseChart = null;
 
 function updateChart(expenseData) {
@@ -139,9 +135,9 @@ function updateChart(expenseData) {
 
 
 
-// Fetch expenses when the page loads
+
 document.addEventListener("DOMContentLoaded", fetchExpenses);
 
-// Make Functions Globally Accessible
+
 window.addExpense = addExpense;
 window.deleteExpense = deleteExpense;
