@@ -79,7 +79,27 @@ async function deleteExpense(id) {
 }
 
 // Update Pie Chart
-let expenseChart;
+// let expenseChart;
+// function updateChart(expenseData) {
+//     const ctx = document.getElementById("expenseChart").getContext("2d");
+
+//     if (expenseChart) {
+//         expenseChart.destroy();
+//     }
+
+//     expenseChart = new Chart(ctx, {
+//         type: "pie",
+//         data: {
+//             labels: Object.keys(expenseData),
+//             datasets: [{
+//                 data: Object.values(expenseData),
+//                 backgroundColor: ['#ff6384', '#36a2eb', '#ffce56', '#4bc0c0', '#9966ff']
+//             }]
+//         }
+//     });
+// }
+
+
 function updateChart(expenseData) {
     const ctx = document.getElementById("expenseChart").getContext("2d");
 
@@ -95,6 +115,20 @@ function updateChart(expenseData) {
                 data: Object.values(expenseData),
                 backgroundColor: ['#ff6384', '#36a2eb', '#ffce56', '#4bc0c0', '#9966ff']
             }]
+        },
+        options: {
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(tooltipItem) {
+                            const total = tooltipItem.dataset.data.reduce((sum, val) => sum + val, 0);
+                            const value = tooltipItem.raw;
+                            const percentage = ((value / total) * 100).toFixed(2);
+                            return `${tooltipItem.label}: ${value} (${percentage}%)`;
+                        }
+                    }
+                }
+            }
         }
     });
 }
