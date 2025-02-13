@@ -2,7 +2,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-auth.js";
 
-// Your Firebase configuration
 const firebaseConfig = {
     apiKey: "AIzaSyAgLFKLAJuAxhxEqLXl7GqFhhtyp-QWRtQ",
     authDomain: "expenditure-tracker-js.firebaseapp.com",

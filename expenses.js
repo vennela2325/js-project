@@ -1,5 +1,7 @@
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
 import { getDatabase, ref, set, get, remove } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-database.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-auth.js";
 
 
 const firebaseConfig = {
@@ -16,9 +18,15 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
-
+const auth = getAuth(app);
 
 async function addExpense() {
+    const user = auth.currentUser;
+    if (!user) {
+        Swal.fire("Error", "You must be logged in to add an expense", "error");
+        return;
+    }
+
     const category = document.getElementById("category").value.trim();
     const amount = parseFloat(document.getElementById("amount").value);
     const date = document.getElementById("date").value;
@@ -28,16 +36,17 @@ async function addExpense() {
         return;
     }
 
-    const expenseId = Date.now().toString(); // Unique ID for each expense
+    const expenseId = Date.now().toString();
+    const userId = user.uid; 
 
     try {
-        await set(ref(db, "expenses/" + expenseId), {
+        await set(ref(db, `expenses/${userId}/${expenseId}`), {
             category,
             amount,
             date
         });
         Swal.fire("Success", "Expense added successfully", "success");
-        fetchExpenses();
+        fetchExpenses(); 
     } catch (error) {
         Swal.fire("Error", error.message, "error");
     }
@@ -45,7 +54,14 @@ async function addExpense() {
 
 
 async function fetchExpenses() {
-    const dbRef = ref(db, "expenses");
+    const user = auth.currentUser;
+    if (!user) {
+        console.log("No user logged in.");
+        return;
+    }
+
+    const userId = user.uid;
+    const dbRef = ref(db, `expenses/${userId}`);
     const snapshot = await get(dbRef);
     const expenseList = document.getElementById("expenseList");
     expenseList.innerHTML = "";
@@ -63,20 +79,31 @@ async function fetchExpenses() {
                 <button class="btn btn-danger btn-sm" onclick="deleteExpense('${key}')">Delete</button>`;
             expenseList.appendChild(li);
         }
+    } else {
+        expenseList.innerHTML = "<li>No expenses found.</li>";
     }
     updateChart(expenseData);
 }
 
 
-async function deleteExpense(id) {
+async function deleteExpense(expenseId) {
+    const user = auth.currentUser;
+    if (!user) {
+        Swal.fire("Error", "You must be logged in to delete an expense", "error");
+        return;
+    }
+
+    const userId = user.uid;
+
     try {
-        await remove(ref(db, "expenses/" + id));
+        await remove(ref(db, `expenses/${userId}/${expenseId}`));
         Swal.fire("Deleted", "Expense deleted successfully", "success");
         fetchExpenses();
     } catch (error) {
         Swal.fire("Error", error.message, "error");
     }
 }
+
 let expenseChart = null;
 
 function updateChart(expenseData) {
@@ -115,29 +142,31 @@ function updateChart(expenseData) {
                             return `${tooltipItem.label}: $${value} (${percentage}%)`;
                         }
                     }
-                },
-                datalabels: {  // ✅ Show percentage inside pie chart
-                    formatter: (value, context) => {
-                        const percentage = ((value / totalAmount) * 100).toFixed(2);
-                        return `${percentage}%`;
-                    },
-                    color: '#fff',
-                    font: {
-                        weight: 'bold',
-                        size: 14
-                    }
                 }
             }
-        },
-        plugins: [ChartDataLabels] // ✅ Register Datalabels plugin
+        }
     });
 }
 
 
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        console.log("User logged in:", user.email);
+        fetchExpenses(); 
+    } else {
+        console.log("No user logged in.");
+        document.getElementById("expenseList").innerHTML = "<li>Please log in to see your expenses.</li>";
+    }
+});
 
 
-document.addEventListener("DOMContentLoaded", fetchExpenses);
-
+document.addEventListener("DOMContentLoaded", () => {
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            fetchExpenses(); 
+        }
+    });
+});
 
 window.addExpense = addExpense;
 window.deleteExpense = deleteExpense;
